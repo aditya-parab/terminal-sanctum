@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "--- 🛠️  COUNCIL VALIDATION PIPELINE 🛠️  ---"
+echo "--- 🛠️  VALIDATION PIPELINE 🛠️  ---"
 
 # 1. Formatting Check
 echo "Step 1: Checking Formatting (cargo fmt)..."

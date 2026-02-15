@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "--- 🛡️  TERMINAL SANCTUM: COUNCIL STANDARD DEPLOYMENT 🛡️  ---"
+echo "--- 🛡️  TERMINAL SANCTUM: STANDARD DEPLOYMENT 🛡️  ---"
 
 # 1. Purge Old Artifacts
 echo "[1/4] Performing cache purge (cargo clean)..."

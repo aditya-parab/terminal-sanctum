@@ -1,7 +1,7 @@
 #!/bin/bash
 # Terminal Sanctum - Unified Launcher
 
-# 1. Council Validation
+# 1. Validation
 ./validate.sh
 
 # 2. Execution
