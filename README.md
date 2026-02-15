@@ -70,10 +70,8 @@ sanctum
 *   **`Space`**: Resolve an objective.
 *   **`q`**: Save and exit the sanctuary.
 
----
-
 ## 🧪 Technical Integrity
-Terminal Sanctum is developed under the **Council Strategy**, a multi-persona framework that mandates:
+Terminal Sanctum is developed with a focus on professional standards and operational stability:
 *   **Zero-Warning Builds:** No clippy warnings or linter errors allowed.
 *   **Verified Documentation:** Every core API is tested directly via its documentation examples.
 *   **Visual Auditing:** Automated tests verify that UI components are rendered correctly to the buffer.
