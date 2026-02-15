@@ -1293,16 +1293,26 @@ fn render_stats_panel(f: &mut ratatui::Frame, app: &App, area: Rect) {
     f.render_widget(Paragraph::new(name_line), left[0]);
     f.render_widget(
         Gauge::default()
-            .gauge_style(Style::default().fg(Color::Green))
+            .gauge_style(Style::default().fg(Color::LightGreen))
             .percent(app.avatar.satiety as u16)
-            .label("COMMIT ENERGY"),
+            .label(Span::styled(
+                "COMMIT ENERGY",
+                Style::default()
+                    .fg(Color::Black)
+                    .add_modifier(Modifier::BOLD),
+            )),
         left[1],
     );
     f.render_widget(
         Gauge::default()
-            .gauge_style(Style::default().fg(Color::Rgb(255, 165, 0)))
+            .gauge_style(Style::default().fg(Color::Yellow))
             .percent(app.avatar.focus as u16)
-            .label(format!("FOCUS (+{} RESTED)", app.avatar.rested_xp)),
+            .label(Span::styled(
+                format!("FOCUS (+{} RESTED)", app.avatar.rested_xp),
+                Style::default()
+                    .fg(Color::Black)
+                    .add_modifier(Modifier::BOLD),
+            )),
         left[2],
     );
     let speech = Paragraph::new(format!(
