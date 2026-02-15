@@ -125,6 +125,15 @@ pub struct Avatar {
 }
 
 impl Avatar {
+    /// SUMMON: Principal Hero Factory.
+    ///
+    /// # Example
+    /// ```
+    /// use sanctum_core::Avatar;
+    /// let avatar = Avatar::summon();
+    /// assert_eq!(avatar.xp, 0);
+    /// assert_eq!(avatar.level(), 1);
+    /// ```
     pub fn summon() -> Self {
         let mut rng = rand::thread_rng();
         let race_type = match rng.gen_range(0..4) {
@@ -163,6 +172,26 @@ impl Avatar {
         avatar
     }
 
+    /// REINCARNATION: Restores a soul from persistent state.
+    ///
+    /// # Example
+    /// ```
+    /// use sanctum_core::{Avatar, PersistentState, RaceType, Gender};
+    /// use chrono::Utc;
+    /// let state = PersistentState {
+    ///     name: "Thrall".to_string(),
+    ///     race_type: RaceType::Orc,
+    ///     gender: Gender::Male,
+    ///     specialization: None,
+    ///     xp: 500,
+    ///     rested_xp: 0,
+    ///     last_saved_at: Utc::now(),
+    ///     birth_date: Utc::now(),
+    ///     tasks: vec![],
+    /// };
+    /// let avatar = Avatar::from_state(state);
+    /// assert_eq!(avatar.level(), 6);
+    /// ```
     pub fn from_state(state: PersistentState) -> Self {
         let mut avatar = Self {
             name: state.name,
@@ -1051,6 +1080,23 @@ pub fn ui(f: &mut ratatui::Frame, app: &mut App) {
     render_stats_panel(f, app, dashboard[1]);
     render_task_list(f, app, root[1]);
     render_activity_log(f, app, root[2]);
+    pub fn render_controls(f: &mut ratatui::Frame, app: &App, area: Rect) {
+        let msg = match app.input_mode {
+            InputMode::Normal => "(a) Objective | (e) Emote | (u) Overclock | (s) Switch | (Space) Resolve | (x) Delete | (q) Quit".to_string(),
+            InputMode::Editing => format!("Define Objective: {}_ (Enter to Accept)", app.input),
+            InputMode::Specializing => "CHOOSE CAREER PATH (Press 1 or 2)".to_string(),
+            InputMode::Emoting => "SELECT EMOTE (A-H) or ESC".to_string(),
+            _ => "".to_string(),
+        };
+        f.render_widget(
+            Paragraph::new(msg).alignment(Alignment::Center).block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .style(Style::default().fg(Color::Yellow)),
+            ),
+            area,
+        );
+    }
     render_controls(f, app, root[3]);
     if matches!(app.input_mode, InputMode::Specializing) {
         render_specialization_modal(f, app);
@@ -1348,24 +1394,6 @@ fn render_activity_log(f: &mut ratatui::Frame, app: &App, area: Rect) {
     );
 }
 
-pub fn render_controls(f: &mut ratatui::Frame, app: &App, area: Rect) {
-    let msg = match app.input_mode {
-        InputMode::Normal => "(a) Objective | (e) Emote | (u) Overclock | (s) Switch | (Space) Resolve | (x) Remove | (q) Quit".to_string(),
-        InputMode::Editing => format!("Define Objective: {}_ (Enter to Accept)", app.input),
-        InputMode::Specializing => "CHOOSE CAREER PATH (Press 1 or 2)".to_string(),
-        InputMode::Emoting => "SELECT EMOTE (A-H) or ESC".to_string(),
-        _ => "".to_string(),
-    };
-    f.render_widget(
-        Paragraph::new(msg).alignment(Alignment::Center).block(
-            Block::default()
-                .borders(Borders::ALL)
-                .style(Style::default().fg(Color::Yellow)),
-        ),
-        area,
-    );
-}
-
 fn render_specialization_modal(f: &mut ratatui::Frame, app: &App) {
     let area = centered_rect(60, 40, f.size());
     f.render_widget(Clear, area);
@@ -1468,9 +1496,16 @@ fn centered_rect(px: u16, py: u16, r: Rect) -> Rect {
 
 fn get_legendary_name(r: RaceType, g: Gender, rng: &mut rand::rngs::ThreadRng) -> String {
     let n = match (r, g) {
-        (RaceType::Orc, Gender::Male) => {
-            vec!["Thrall", "Grom", "Cairne", "Vol'jin", "Rexxar", "Rokhan"]
-        }
+        (RaceType::Orc, Gender::Male) => vec![
+            "Thrall",
+            "Grom",
+            "Cairne",
+            "Vol'jin",
+            "Rexxar",
+            "Rokhan",
+            "Drek'Thar",
+            "Nazgrel",
+        ],
         (RaceType::Orc, Gender::Female) => vec!["Draka", "Aggra", "Garona", "Zaela"],
         (RaceType::Human, Gender::Male) => vec![
             "Arthas",
@@ -1481,6 +1516,7 @@ fn get_legendary_name(r: RaceType, g: Gender, rng: &mut rand::rngs::ThreadRng) -
             "Kael'thas",
             "Turalyon",
             "Khadgar",
+            "Genn",
         ],
         (RaceType::Human, Gender::Female) => vec!["Jaina", "Modera", "Calia", "Alleria", "Vereesa"],
         (RaceType::Undead, Gender::Male) => vec![
@@ -1491,14 +1527,25 @@ fn get_legendary_name(r: RaceType, g: Gender, rng: &mut rand::rngs::ThreadRng) -
             "Tichondrius",
             "Putress",
             "Nathanos",
+            "Balnazzar",
         ],
         (RaceType::Undead, Gender::Female) => vec!["Sylvanas", "Faerlina", "Anastari", "Lilian"],
-        (RaceType::NightElf, Gender::Male) => {
-            vec!["Malfurion", "Illidan", "Cenarius", "Jarod", "Akama"]
-        }
-        (RaceType::NightElf, Gender::Female) => {
-            vec!["Tyrande", "Maiev", "Shandris", "Naisha", "Lady Vashj"]
-        }
+        (RaceType::NightElf, Gender::Male) => vec![
+            "Malfurion",
+            "Illidan",
+            "Cenarius",
+            "Jarod",
+            "Akama",
+            "Broll",
+        ],
+        (RaceType::NightElf, Gender::Female) => vec![
+            "Tyrande",
+            "Maiev",
+            "Shandris",
+            "Naisha",
+            "Lady Vashj",
+            "Lunara",
+        ],
     };
     n[rng.gen_range(0..n.len())].to_string()
 }
@@ -1512,6 +1559,8 @@ fn get_intro_message(r: RaceType, name: &str) -> String {
         "Kael'thas" => "Anar'alah belore! By the light of the compiler!",
         "Rexxar" => "I track bugs, not animals.",
         "Chen" => "Another round? Of refactoring, perhaps!",
+        "Akama" => "We are the Broken, but our code is whole.",
+        "Antonidas" => "Knowledge is power. But a good cache is faster.",
         _ => match r {
             RaceType::Orc => "The spirits are restless... likely due to the logic in this PR.",
             RaceType::Human => "Justice has come! Systems online.",
