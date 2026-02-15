@@ -1,0 +1,10 @@
+#!/bin/bash
+# Terminal Sanctum - Unified Launcher
+
+# 1. Council Validation
+./validate.sh
+
+# 2. Execution
+echo "--- 🛡️  ENTERING THE TERMINAL SANCTUM 🛡️  ---"
+export PATH="$HOME/.cargo/bin:$PATH"
+cargo run --quiet --bin sanctum
