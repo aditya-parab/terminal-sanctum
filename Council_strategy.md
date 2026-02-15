@@ -34,6 +34,7 @@ This document outlines a decentralized development methodology leveraging a "Cou
 
 ## 3. Core Engineering Tenets
 
+*   **Conventional Commits:** All Git commit messages must follow the Conventional Commits specification (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`). This ensures a readable and professional project history.
 *   **Zero-Warning Build:** The project must compile/build with zero warnings and pass all Linting requirements on **all targets** (binaries, libraries, and tests).
 *   **Executable Documentation:** Core logic must have executable documentation tests or examples. Documentation that cannot be verified against the implementation is considered a failure.
 *   **Atomic Transactions:** Transactional persistence (e.g., via .tmp swap or database transactions) to prevent data corruption.

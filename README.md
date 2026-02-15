@@ -1,79 +1,84 @@
-# 🛡️ Terminal Sanctum: A Warcraft-Inspired Productivity Sanctuary
+# 🛡️ Terminal Sanctum
 
-**Terminal Sanctum** is a high-fidelity, gamified TUI (Terminal User Interface) designed to serve as a **Majula for the modern developer**. It is a persistent safehouse where your coding consistency is rewarded with character progression, transforming your work terminal into a sanctuary of respite and legendary heroics.
-
----
-
-## 🔒 Safety & Principal-Grade Integrity
-
-The **Council of Ten** enforces a strict **Zero-Impact** policy. The Sanctum is an "Agnostic Observer"—it rewards your journey without ever touching your workspace.
-
-### 1. Zero-Git Invasiveness (The "Ghost" Pattern)
-*   **Passive Detection:** The Sanctum detects Git activity by matching filesystem event paths. It **never opens, reads, or modifies** your source code or `.git` internals.
-*   **No Execution:** The application **never** executes `git` binaries or shell commands within your projects.
-*   **Logic Isolation:** Progression is handled via internal receivers (`link_contribution`) that interpret external signals without interference.
-
-### 2. The "Pure Soul" Model (Total Persistence)
-*   **Persistent Respite:** Unlike common session TUIs, your **Objectives** and character state (Level, XP, Class) are permanently linked to your Hero's soul (.json).
-*   **Context Persistence:** Your goals survive hero switches, application restarts, and system reboots. Every time you return to the Sanctum, your "safehouse" state is exactly as you left it.
-*   **Zero Metadata Leakage:** Save files contain **zero Git metadata**. No project paths, repo names, or commit history are ever stored on disk.
+**Terminal Sanctum** is a high-fidelity, Warcraft-inspired productivity TUI (Terminal User Interface). Designed as a **persistent safehouse for developers**—much like the serene Majula in *Dark Souls*—it provides a sanctuary of respite where your coding consistency is rewarded with legendary hero progression.
 
 ---
 
-## 🚀 Principal Installation
+## 🌟 The Product Experience
 
-Execute the unified deployment script to verify the **Fortress Pipeline**:
+Terminal Sanctum lives alongside your development workflow. It doesn't interfere; it observes. By passively detecting Git activity in your workspace, it fuels the growth of your summoned Hero.
 
-```bash
-cd terminal-sanctum
-./install.sh
-```
-
-The script mandates:
-1.  **Cache Purge:** A clean environment start.
-2.  **Standardized Formatting:** Precise code style alignment.
-3.  **Static Analysis:** Zero-warning clippy mandate on all targets.
-4.  **Integrity battery:** 35+ automated tests (Unit, Integration, UI, and Doc-tests).
+### Key Features
+*   **Legendary Roster:** Summon from 30+ canonical Warcraft 3 heroes (Thrall, Arthas, Sylvanas, Illidan, etc.).
+*   **Immersive Wit:** Every hero features unique, personality-driven dialogue that blends iconic lore with development humor.
+*   **Persistent Safehouse:** Unlike typical session-based tools, your **Objectives** and Hero progress are permanently stored. They survive switches, restarts, and reboots.
+*   **Ergonomic Control:** Optimized for speed. Emotes and selections are mapped to the home row (`ASDFGH`) for zero-friction interaction.
+*   **Majula Atmosphere:** A minimalist, aesthetic UI designed to provide a calm "savepoint" within the chaos of complex projects.
 
 ---
 
-## 🎮 Controls & Ergonomics
+## 🏗️ Architecture & Safety
 
-Launch the sanctuary from any project directory:
+The Sanctum is built on a **Principal Seniority** architecture that prioritizes the safety of your workspace.
+
+### 1. The "Ghost" Pattern (Zero-Impact)
+The Sanctum is a strictly **passive observer**. 
+*   **No Git Commands:** It never executes `git` binaries or shell commands in your project.
+*   **No File Modification:** It never opens, reads, or modifies your source code or Git internals.
+*   **Filesystem Events:** Detection is handled by matching system-level path events, ensuring 100% isolation from your work.
+
+### 2. Library/Binary Hybrid Model
+The application is structured into two distinct layers:
+*   **`sanctum_core` (Library):** Contains all Hero logic, XP math, persistence engines, and TUI rendering components.
+*   **`sanctum` (Binary):** A thin entry point that links the library to your terminal's I/O.
+*   **Total Coverage:** This model allows 100% of the logic and UI rendering to be verified through automated unit, integration, and visual regression tests.
+
+---
+
+## 🚀 Setup & Installation
+
+### Prerequisites
+*   **Rust Toolchain:** Ensure you have `cargo` installed (Standard via [rustup.rs](https://rustup.rs)).
+
+### Quick Install
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/aditya-parab/terminal-sanctum.git
+    cd terminal-sanctum
+    ```
+
+2.  **Run the Deployment Script:**
+    ```bash
+    ./install.sh
+    ```
+    *This script automatically purges caches, validates code standards, executes the 40+ test battery, and installs the `sanctum` command globally.*
+
+---
+
+## 🎮 Basic Controls
+
+Launch your safehouse from any project directory:
 ```bash
 sanctum
 ```
 
-### Key Bindings
-*   **`s`**: **Switch Hero** (Return to the Hall of Heroes).
-*   **`a`**: Define **Objective**. (Persistent mission log)
-*   **`e`**: Trigger **Emote**. (Ergonomic selection row)
-*   **`u`**: Activate **System Overclock**. (Legendary focus buff)
-*   **`Space`**: Mark Objective as **Resolved**.
-*   **`x`**: **Remove** an objective.
-*   **`q`**: Secure the soul and exit.
-
-### Ergonomic Emote Engine
-Triggered by **`e`**, selections are mapped to the **`ASDFGH`** row directly below your trigger finger position. A high-fidelity keyboard diagram is provided in-app for intuitive navigation.
+*   **`a`**: Add a **Persistent Objective**.
+*   **`e`**: Open **Emote Menu** (Use `ASDFGH` to select).
+*   **`u`**: Trigger **System Overclock** (Spend focus for 3x XP).
+*   **`s`**: Return to the **Hall of Heroes** (Switch Hero).
+*   **`d`**: **Delete** a character profile (In the Hall of Heroes).
+*   **`Space`**: Resolve an objective.
+*   **`q`**: Save and exit the sanctuary.
 
 ---
 
-## 🎭 Legendary Personalities
-
-Summon heroes from a canonical Warcraft 3 roster, each featuring unique, witty dialogue blended with development context:
-*   **Thrall:** *"I have seen the future, and it is written in Rust. Mostly."*
-*   **Illidan:** *"YOU ARE NOT PREPARED... for this merge conflict!"*
-*   **Arthas:** *"I will purge this codebase of all defects!"*
-*   **Vol'jin:** *"I hear da spirits... dey say 'fix da indentation'."*
-*   **Muradin:** *"All right, who wants to be refactored?!"*
-*   **Maiev:** *"Justice will be served... in O(1) time."*
+## 🧪 Technical Integrity
+Terminal Sanctum is developed under the **Council Strategy**, a multi-persona framework that mandates:
+*   **Zero-Warning Builds:** No clippy warnings or linter errors allowed.
+*   **Verified Documentation:** Every core API is tested directly via its documentation examples.
+*   **Visual Auditing:** Automated tests verify that UI components are rendered correctly to the buffer.
 
 ---
 
-## 🧪 Documentation & Testing
-This project adheres to **principal seniority standards**. All core logic is verified through **executable doc-tests**, ensuring that the documentation is as stable as the implementation. 
-
----
-
-## 📜 Methodology
-Developed under the **Council Strategy**, a multi-persona framework focused on elite engineering, lore immersion, and operational proactivity.
+## 📜 License
+This project is for personal productivity and immersive development. Warcraft 3 is a trademark of Blizzard Entertainment. Dialogue and personalities are inspired by the Warcraft universe.
