@@ -240,27 +240,26 @@ impl Avatar {
         {
             for entry in walker {
                 let path = entry.path();
-                if path.to_string_lossy().contains(".git") && path.ends_with("logs/HEAD") {
-                    if let Ok(metadata) = std::fs::metadata(path) {
-                        if metadata.is_file() {
-                            if let Ok(modified) = metadata.modified() {
-                                let project_name = path
-                                    .ancestors()
-                                    .find(|p| p.ends_with(".git"))
-                                    .and_then(|p| p.parent())
-                                    .and_then(|p| p.file_name())
-                                    .and_then(|s| s.to_str())
-                                    .unwrap_or("Unknown Project")
-                                    .to_string();
-                                if let Some(message) = Self::extract_last_commit_msg(path) {
-                                    found.push(Contribution {
-                                        project: project_name,
-                                        message,
-                                        timestamp: modified.into(),
-                                    });
-                                }
-                            }
-                        }
+                if path.to_string_lossy().contains(".git")
+                    && path.ends_with("logs/HEAD")
+                    && let Ok(metadata) = std::fs::metadata(path)
+                    && metadata.is_file()
+                    && let Ok(modified) = metadata.modified()
+                {
+                    let project_name = path
+                        .ancestors()
+                        .find(|p| p.ends_with(".git"))
+                        .and_then(|p| p.parent())
+                        .and_then(|p| p.file_name())
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("Unknown Project")
+                        .to_string();
+                    if let Some(message) = Self::extract_last_commit_msg(path) {
+                        found.push(Contribution {
+                            project: project_name,
+                            message,
+                            timestamp: modified.into(),
+                        });
                     }
                 }
             }
@@ -272,12 +271,11 @@ impl Avatar {
     pub fn extract_last_commit_msg<P: AsRef<Path>>(path: P) -> Option<String> {
         if let Ok(file) = std::fs::File::open(path) {
             let reader = io::BufReader::new(file);
-            if let Some(Ok(last_line)) = reader.lines().last() {
-                if let Some(msg_part) = last_line.split('\t').next_back() {
-                    if last_line.contains('\t') {
-                        return Some(msg_part.replace("commit: ", "").trim().to_string());
-                    }
-                }
+            if let Some(Ok(last_line)) = reader.lines().last()
+                && let Some(msg_part) = last_line.split('\t').next_back()
+                && last_line.contains('\t')
+            {
+                return Some(msg_part.replace("commit: ", "").trim().to_string());
             }
         }
         None
@@ -310,26 +308,26 @@ impl Avatar {
 
     pub fn update_tick(&mut self) {
         let now = Utc::now();
-        if let Some(end) = self.emote_end_time {
-            if now > end {
-                self.current_emote = Emote::None;
-                self.emote_end_time = None;
-            }
+        if let Some(end) = self.emote_end_time
+            && now > end
+        {
+            self.current_emote = Emote::None;
+            self.emote_end_time = None;
         }
-        if let Some(end) = self.ultimate_active_until {
-            if now > end {
-                self.ultimate_active_until = None;
-                self.add_log("System Overclock complete.".to_string());
-            }
+        if let Some(end) = self.ultimate_active_until
+            && now > end
+        {
+            self.ultimate_active_until = None;
+            self.add_log("System Overclock complete.".to_string());
         }
         let mut decay_rate = SATIETY_DECAY_PER_HOUR;
-        if let Some(s) = self.specialization {
-            if matches!(
+        if let Some(s) = self.specialization
+            && matches!(
                 s,
                 Specialization::Paladin | Specialization::DeathKnight | Specialization::Lich
-            ) {
-                decay_rate = 0.5;
-            }
+            )
+        {
+            decay_rate = 0.5;
         }
         let hours = now.signed_duration_since(self.last_commit).num_seconds() as f32 / 3600.0;
         self.satiety = (MAX_SATIETY - (hours * decay_rate)).max(0.0);
@@ -603,13 +601,13 @@ impl Avatar {
 
     pub fn interact(&mut self) {
         let mut gain = FOCUS_GAIN_INTERACT;
-        if let Some(s) = self.specialization {
-            if matches!(
+        if let Some(s) = self.specialization
+            && matches!(
                 s,
                 Specialization::FarSeer | Specialization::Archmage | Specialization::Lich
-            ) {
-                gain = 25.0;
-            }
+            )
+        {
+            gain = 25.0;
         }
         self.focus = (self.focus + gain).min(MAX_FOCUS);
         self.last_interaction = Utc::now();
@@ -820,7 +818,7 @@ impl Avatar {
 
     pub fn get_portrait_layers(&self) -> Vec<String> {
         let sec = Utc::now().second();
-        let is_blink = sec % 4 == 0;
+        let is_blink = sec.is_multiple_of(4);
         let is_female = matches!(self.gender, Gender::Female);
         let mut layers = vec![
             "         ".to_string(),
@@ -899,7 +897,7 @@ impl Avatar {
                 layers[4] = "  | |  ".to_string();
             }
             Emote::Dance => {
-                if sec % 2 == 0 {
+                if sec.is_multiple_of(2) {
                     layers[4] = "  / - \\  ".to_string();
                 }
             }
@@ -1005,16 +1003,16 @@ pub fn get_data_dir() -> Option<PathBuf> {
 
 pub fn list_profiles() -> Vec<String> {
     let mut profiles = Vec::new();
-    if let Some(dir) = get_data_dir() {
-        if let Ok(entries) = std::fs::read_dir(dir) {
-            for entry in entries.flatten() {
-                if let Ok(ft) = entry.file_type() {
-                    if ft.is_file() && entry.path().extension().is_some_and(|e| e == "json") {
-                        if let Some(name) = entry.path().file_stem().and_then(|s| s.to_str()) {
-                            profiles.push(name.to_string());
-                        }
-                    }
-                }
+    if let Some(dir) = get_data_dir()
+        && let Ok(entries) = std::fs::read_dir(dir)
+    {
+        for entry in entries.flatten() {
+            if let Ok(ft) = entry.file_type()
+                && ft.is_file()
+                && entry.path().extension().is_some_and(|e| e == "json")
+                && let Some(name) = entry.path().file_stem().and_then(|s| s.to_str())
+            {
+                profiles.push(name.to_string());
             }
         }
     }
