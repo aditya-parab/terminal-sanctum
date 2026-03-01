@@ -233,28 +233,25 @@ impl Avatar {
 
     pub fn perform_passive_scan<P: AsRef<Path>>(root: P) -> Vec<Contribution> {
         let mut found = Vec::new();
-        if let Ok(walker) = WalkDir::new(root)
-            .max_depth(7)
+        for entry in WalkDir::new(root)
+            .max_depth(2)
             .into_iter()
-            .collect::<Result<Vec<_>, _>>()
+            .filter_map(|e| e.ok())
         {
-            for entry in walker {
-                let path = entry.path();
-                if path.to_string_lossy().contains(".git")
-                    && path.ends_with("logs/HEAD")
-                    && let Ok(metadata) = std::fs::metadata(path)
+            if entry.file_name() == ".git" && entry.file_type().is_dir() {
+                let head_log = entry.path().join("logs/HEAD");
+                if let Ok(metadata) = std::fs::metadata(&head_log)
                     && metadata.is_file()
                     && let Ok(modified) = metadata.modified()
                 {
-                    let project_name = path
-                        .ancestors()
-                        .find(|p| p.ends_with(".git"))
-                        .and_then(|p| p.parent())
+                    let project_name = entry
+                        .path()
+                        .parent()
                         .and_then(|p| p.file_name())
                         .and_then(|s| s.to_str())
                         .unwrap_or("Unknown Project")
                         .to_string();
-                    if let Some(message) = Self::extract_last_commit_msg(path) {
+                    if let Some(message) = Self::extract_last_commit_msg(&head_log) {
                         found.push(Contribution {
                             project: project_name,
                             message,
@@ -929,6 +926,7 @@ pub struct App {
     pub list_state: ListState,
     pub profile_list: Vec<String>,
     pub profile_list_state: ListState,
+    pub scan_rx: Option<std::sync::mpsc::Receiver<Vec<Contribution>>>,
 }
 
 impl App {
@@ -944,6 +942,7 @@ impl App {
             list_state,
             profile_list: Vec::new(),
             profile_list_state: ListState::default(),
+            scan_rx: None,
         }
     }
     pub fn next_task(&mut self) {
@@ -1321,27 +1320,33 @@ fn render_stats_panel(f: &mut ratatui::Frame, app: &App, area: Rect) {
     .wrap(Wrap { trim: true })
     .style(Style::default().fg(Color::Gray));
     f.render_widget(speech, left[3]);
-    let history: Vec<ListItem> = app
-        .avatar
-        .contributions
-        .iter()
-        .map(|c| {
-            ListItem::new(vec![
-                Line::from(vec![Span::styled(
-                    format!("• {}", c.project),
-                    Style::default()
-                        .fg(Color::White)
-                        .add_modifier(Modifier::BOLD),
-                )]),
-                Line::from(Span::styled(
-                    format!("  \"{}\"", c.message),
-                    Style::default()
-                        .fg(Color::Gray)
-                        .add_modifier(Modifier::ITALIC),
-                )),
-            ])
-        })
-        .collect();
+    let history: Vec<ListItem> = if app.scan_rx.is_some() {
+        vec![ListItem::new(Span::styled(
+            "  Scanning workspace...",
+            Style::default().fg(Color::DarkGray),
+        ))]
+    } else {
+        app.avatar
+            .contributions
+            .iter()
+            .map(|c| {
+                ListItem::new(vec![
+                    Line::from(vec![Span::styled(
+                        format!("• {}", c.project),
+                        Style::default()
+                            .fg(Color::White)
+                            .add_modifier(Modifier::BOLD),
+                    )]),
+                    Line::from(Span::styled(
+                        format!("  \"{}\"", c.message),
+                        Style::default()
+                            .fg(Color::Gray)
+                            .add_modifier(Modifier::ITALIC),
+                    )),
+                ])
+            })
+            .collect()
+    };
     f.render_widget(
         List::new(history).block(
             Block::default()
